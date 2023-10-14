@@ -190,3 +190,27 @@ combined_df =
 combined_df
 ```
 
+Produce a reader-friendly table for the number of men and women in each education category, and create a visualization of the age distributions for men and women in each education category. Comment on these items.
+
+```{r table}
+combined_df |> 
+  group_by(education, sex) |> 
+  summarize(n_sex = n()) |> 
+  pivot_wider(
+    names_from = sex,
+    values_from = n_sex
+  ) |> 
+  knitr::kable()
+```
+
+```{r age distribution graph}
+combined_df |> 
+  ggplot(aes(x = education, y = age, color = sex)) +
+  geom_boxplot() +
+  labs(
+    title = "Age Distribution for Education Level of Male and Female Participants",
+    x = "Education level",
+    y = "Age"
+  )
+```
+
