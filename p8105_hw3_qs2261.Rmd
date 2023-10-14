@@ -159,16 +159,34 @@ load and tidy the paticipants data
 ```{r}
 participants_df =
   read_csv("data/nhanes_covar.csv", skip = 4) |> 
-  janitor::clean_names()
-participants_df
+  janitor::clean_names() |> 
+  filter(age >= 21) |> 
+  drop_na() |> 
+  mutate(
+    sex = case_match(
+      sex,
+      1 ~"male",
+      2 ~"female"),
+    education = case_match(
+      education,
+      1 ~ "less than high school",
+      2 ~ "high school equivalent",
+      3 ~ "more than high school"),
+    sex = as.factor(sex),
+    education = as.factor(education))
 ```
 
 load and tidy the accelerometer data
 ```{r}
 accelerometer_df =
   read_csv("data/nhanes_accel.csv") |> 
-  janitor::clean_names()
-accelerometer_df
+  janitor::clean_names() 
 ```
 
+merge two datasets
+```{r}
+combined_df = 
+  inner_join(participants_df, accelerometer_df, by = "seqn") 
+combined_df
+```
 
