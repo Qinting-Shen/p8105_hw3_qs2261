@@ -151,3 +151,24 @@ brfss_df |>
   facet_grid( ~ year)
 ```
 
+
+
+### Problem 3
+
+load and tidy the paticipants data
+```{r}
+participants_df =
+  read_csv("data/nhanes_covar.csv", skip = 4) |> 
+  janitor::clean_names()
+participants_df
+```
+
+load and tidy the accelerometer data
+```{r}
+accelerometer_df =
+  read_csv("data/nhanes_accel.csv") |> 
+  janitor::clean_names()
+accelerometer_df
+```
+
+
