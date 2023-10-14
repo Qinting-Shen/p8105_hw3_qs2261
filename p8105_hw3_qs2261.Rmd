@@ -58,9 +58,9 @@ instacart |>
 
 
 4. Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).
-```{r, warning = FALSE}
+```{r}
 instacart |> 
-  filter(product_name == c("Pink Lady Apples", "Coffee Ice Cream")) |> 
+  filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) |> 
   group_by(product_name, order_dow) |> 
   summarize(mean_hour = mean(order_hour_of_day)) |> 
   pivot_wider(
@@ -69,6 +69,26 @@ instacart |>
   ) |> 
   knitr::kable(digits = 2)
 ```
+
+
+### Problem 2
+
+load the data `brfss_smart2010`
+```{r}
+library(p8105.datasets)
+data("brfss_smart2010")
+```
+
+1. Clean the data
+```{r}
+brfss_df =  
+  brfss_smart2010 |> 
+  janitor::clean_names() |> 
+  filter(topic == "Overall Health") |> 
+  filter(response %in% c("Excellent", "Very good", "Good", "Fair", "Poor")) |>
+  mutate(response = forcats::fct_relevel(response, c("Poor", "Fair", "Good", "Very good", "Excellent")))
+```
+
 
 
 
