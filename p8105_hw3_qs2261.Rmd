@@ -79,7 +79,7 @@ library(p8105.datasets)
 data("brfss_smart2010")
 ```
 
-1. Clean the data
+Clean the data
 ```{r}
 brfss_df =  
   brfss_smart2010 |> 
@@ -90,6 +90,31 @@ brfss_df =
 ```
 
 
+1. In 2002, which states were observed at 7 or more locations? What about in 2010?
+
+```{r}
+brfss_2002 =
+  brfss_df |> 
+  filter(year == 2002) |> 
+  group_by(locationabbr) |> 
+  summarize(n_location = n_distinct(locationdesc)) |> 
+  filter(n_location >= 7)
+brfss_2002
+```
+
+In 2002, 6 states: CT, FL, MA, MC, NJ, and PA were observed at 7 or more locations.
+
+```{r}
+brfss_2010 =
+  brfss_df |> 
+  filter(year == 2010) |> 
+  group_by(locationabbr) |> 
+  summarize(n_location = n_distinct(locationdesc)) |> 
+  filter(n_location >= 7)
+brfss_2010
+```
+
+In 2010, 14 states: CA, CO, FL, MA, MD, NC, NE, NJ, NY, OH, PA, SC, TX, WA were observed at 7 or more locations.
 
 
 
