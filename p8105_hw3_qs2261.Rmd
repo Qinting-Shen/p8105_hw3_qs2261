@@ -122,15 +122,14 @@ brfss_excellent =
   brfss_df |> 
   filter(response == "Excellent") |> 
   select(year, locationabbr, data_value) |> 
-  group_by(locationabbr) |> 
+  group_by(year, locationabbr) |> 
   summarize(average_data = mean(data_value))
 ```
 
-??
 ```{r spaghetti plot}
 brfss_excellent |> 
   ggplot(aes(x = year, y = average_data, group = locationabbr)) + 
-  geom_line(aes(color = (group = locationabbr))) +
+  geom_line(aes(color = locationabbr)) +
   labs(
     title = "Average Value of Excellent Responses Over Years",
     x = "Year",
@@ -214,3 +213,67 @@ combined_df |>
   )
 ```
 
+
+
+Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate across minutes to create a total activity variable for each participant. 
+```{r}
+total_activity = 
+  combined_df |> 
+  group_by(seqn, sex, age, education) |> 
+  pivot_longer(
+    min1:min1440,
+    names_to = "minute",
+    values_to = "activity"
+  ) |> 
+  summarize(total_activity = sum(activity))
+```
+
+```{r}
+total_activity |> 
+  mutate(education = forcats::fct_relevel(education, c("less than high school", "high school equivalent", "more than high school"))) |> 
+  ggplot(aes(x = age, y = total_activity, color = sex)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE) +
+  facet_grid(.~ education) +
+  labs(
+    title = "Total Activitt time for Each Participant",
+    x = "Age",
+    y = "Total Activity Time"
+  )
+```
+
+In this plot, I can conclude that total activity time are becoming less and less as age increases whatever his/her education level is. And participants who have more than high school education level have the least activity time on average among the three education levels. Female with high school equivalent and more than high school education level have more activity time compared males, while vice versa in those who are less than high school.
+
+
+Accelerometer data allows the inspection activity over the course of the day. Make a three-panel plot that shows the 24-hour activity time courses for each education level and use color to indicate sex. 
+```{r}
+min_df = 
+  combined_df |> 
+  pivot_longer(
+    min1:min1440,
+    names_to = "minute",
+    names_prefix = "min",
+    values_to = "activity"
+  ) |> 
+  mutate(minute = as.numeric(minute))
+```
+
+
+```{r}
+min_df |> 
+  ggplot(aes(x = minute, y = activity, color = sex)) +
+  geom_point(alpha = .3) +
+  geom_smooth(se = FALSE) +
+  facet_grid(.~ education) +
+  scale_x_continuous(
+    breaks = c(0, 360, 720, 1080, 1440)
+    )+
+  labs(
+    title = "24-hour Activity Time Courses For Each Education Level",
+    x = "Time in Minute",
+    y = "Activity"
+  )+
+  theme(legend.position = "bottom")
+```
+
+In this plot, I can conclude that, in general, people remain a low level of activity during 0-6 am, and a high level of activity after 6 am, this is because many people get up after 6 am. While many males who are more than high school will still be active during 9-10 pm compared to others.
